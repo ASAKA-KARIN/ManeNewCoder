@@ -1,0 +1,1 @@
+2022-02-14 15:32:02,940 WARN [restartedMain] o.s.d.c.CustomConversions [CustomConversions.java:271] Registering converter from class java.time.OffsetDateTime to class org.springframework.data.jdbc.core.convert.JdbcValue as writing converter although it doesn't convert to a store-supported type! You might want to check your annotation setup at the converter implementation.
