@@ -5,7 +5,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Yoshino
@@ -14,7 +17,7 @@ import java.sql.Timestamp;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class User implements Serializable {
     private int id;
     private String username;
     private String password;
@@ -32,5 +35,5 @@ public class User {
     private int status;
     private String activationCode;
     private String headerUrl;
-    private Timestamp createTime;
+    private Date createTime;
 }

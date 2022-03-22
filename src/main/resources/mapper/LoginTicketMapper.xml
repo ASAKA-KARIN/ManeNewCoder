@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newcoder.community.dao.LoginTicketMapper">
+    <insert id="insertLoginTicket" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO login_ticket(user_id,ticket,`status`,expired) VALUES(#{userId},#{ticket},#{status},#{expired})
+    </insert>
+    <update id="updateStatus">
+    UPDATE login_ticket
+    SET `status` = #{status}
+    WHERE
+        <if test="ticket == null || ticket.equals(&quot;&quot;)">
+            1 = 0
+        </if>
+        <if test="ticket != null &amp;&amp; !ticket.equals(&quot;&quot;)">
+            ticket = #{ticket}
+        </if>
+    </update>
+    <select id="getLoginTicket" resultType="com.newcoder.community.pojo.LoginTicket">
+        SELECT id,user_id,ticket,status,expired
+        FROM login_ticket
+        WHERE ticket = #{ticket}
+    </select>
+</mapper>

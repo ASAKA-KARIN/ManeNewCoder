@@ -4,12 +4,70 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.newcoder.community.dao.UserMapper">
     <sql id="user">
-        id,username,password,salt,email,`type`,`status`,activation_code,header_url,create_time
+        id
+        ,username,password,salt,email,`type`,`status`,activation_code,header_url,create_time
     </sql>
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO USER(username, password, salt, email, `type`, `status`, activation_code, header_url, create_time)
+        VALUES (#{username}, #{password}, #{salt}, #{email}, #{type}, #{status}, #{activationCode}, #{headerUrl},
+                #{createTime})
+    </insert>
+    <update id="updateUser" >
+        UPDATE user
+            <trim prefix="set" suffixOverrides=",">
+            <if test="username != null and !username.equals(&quot;&quot;)">
+                username = #{username},
+            </if>
+            <if test="password != null and !password.equals(&quot;&quot;)">
+                password = #{password},
+            </if>
+            <if test="salt != null and !salt.equals(&quot;&quot;)">
+                salt = #{salt},
+            </if>
+            <if test="email != null and !email.equals(&quot;&quot;)">
+                email = #{email},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="activationCode != null and !activationCode.equals(&quot;&quot;)">
+                activation_code = #{activationCode},
+            </if>
+            <if test="headerUrl != null and !headerUrl.equals(&quot;&quot;)">
+                header_url = #{headerUrl},
+            </if>
+            </trim>
+        <where>
+            <if test="id == null">
+                id = 125
+            </if>
+            <if test="id != null">
+                id = #{id}
+            </if>
+        </where>
+    </update>
+    <update id="updateUserPwd">
+        UPDATE user
+        SET password = #{password}
+        WHERE id=#{userId}
+    </update>
 
     <select id="getUserById" resultType="com.newcoder.community.pojo.User">
-            SELECT <include refid="user"></include>
-            FROM user
-            WHERE id = #{id}
+        SELECT
+        <include refid="user"></include>
+        FROM user
+        WHERE id = #{id}
+    </select>
+    <select id="getUserByName" resultType="com.newcoder.community.pojo.User">
+        SELECT
+        <include refid="user"></include>
+        FROM user
+        WHERE username = #{username}
+    </select>
+    <select id="getUserByEmail" resultType="com.newcoder.community.pojo.User">
+        SELECT
+        <include refid="user"></include>
+        FROM user
+        WHERE email = #{email}
     </select>
 </mapper>

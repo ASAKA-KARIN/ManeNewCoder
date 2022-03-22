@@ -10,7 +10,20 @@ import java.util.List;
  */
 @Mapper
 public interface DiscussPostMapper {
-
-    List<DiscussPost> getPosts(int userId);
+    /**
+     *
+     * @param userId
+     * @param orderMode 0正常查询 1按热度查询
+     * @return
+     */
+    List<DiscussPost> getPosts(int userId,int orderMode);
     int getPostsCount(int userId);
+    void insertPost(DiscussPost post);
+    DiscussPost getPost(int id);
+    void updatePostCount(int id,int count);
+    void updateType(int id,int type);
+    void updateStatus(int id,int status);
+    void deletePostById(int id);
+    void updatePostScore(int id,double score);
+    List<DiscussPost> getMyPost(int userId);
 }

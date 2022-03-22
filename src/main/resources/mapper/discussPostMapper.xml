@@ -4,19 +4,57 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.newcoder.community.dao.DiscussPostMapper">
     <sql id="post">
-        id,user_id,title,content,`type`,`status`,create_time,comment_count,score
+        id
+        ,user_id,title,content,`type`,`status`,create_time,comment_count,score
     </sql>
+    <sql id="insertPost">
+        user_id
+        ,title,content,`type`,`status`,create_time,comment_count,score
+    </sql>
+    <insert id="insertPost" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO discuss_post(<include refid="insertPost"></include>)
+        VALUES(#{userId},#{title},#{content},#{type},#{status},#{createTime},#{commentCount},#{score})
+    </insert>
+    <update id="updatePostCount">
+        UPDATE discuss_post
+        SET comment_count=#{count}
+        WHERE id = #{id}
+    </update>
+    <update id="updateType">
+        UPDATE discuss_post
+        SET `type` = #{type}
+        WHERE id = #{id}
+    </update>
 
-
-
+    <update id="updateStatus">
+        UPDATE discuss_post
+        SET `status`=#{status}
+        WHERE id = #{id}
+    </update>
+    <update id="updatePostScore">
+        UPDATE discuss_post
+        SET `score`=#{score}
+        WHERE id = #{id}
+    </update>
+    <delete id="deletePostById">
+        DELETE
+        FROM discuss_post
+        WHERE id = #{id}
+    </delete>
     <select id="getPosts" resultType="com.newcoder.community.pojo.DiscussPost">
-        SELECT <include refid="post"></include>
+        SELECT
+        <include refid="post"></include>
         FROM discuss_post
         WHERE `status` != 2
         <if test="userId != 0">
             AND user_id = #{userId}
         </if>
-        Order BY `type` DESC, create_time desc
+        <if test="orderMode == 0">
+            Order BY `type` DESC, create_time DESC
+        </if>
+        <if test="orderMode == 1">
+            Order BY `type` DESC,`score` DESC,create_time DESC
+        </if>
     </select>
     <select id="getPostsCount" resultType="java.lang.Integer">
         SELECT COUNT(id)
@@ -26,4 +64,17 @@
             AND user_id = #{userId}
         </if>
     </select>
+    <select id="getPost" resultType="com.newcoder.community.pojo.DiscussPost">
+        SELECT
+        <include refid="post"></include>
+        FROM discuss_post
+        WHERE id = #{id}
+    </select>
+    <select id="getMyPost" resultType="com.newcoder.community.pojo.DiscussPost">
+        SELECT <include refid="post"></include>
+        FROM discuss_post
+        WHERE user_id = #{userId} AND `status` != 2
+    </select>
+
+
 </mapper>

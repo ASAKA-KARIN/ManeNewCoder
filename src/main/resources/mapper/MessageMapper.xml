@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newcoder.community.dao.MessageMapper">
+    <sql id="selectMessage">
+        id
+        ,from_id,to_id,conversation_id,content,`status`,create_time
+    </sql>
+    <sql id="insertMessage">
+        from_id
+        ,to_id,conversation_id,content,`status`,create_time
+    </sql>
+    <insert id="insertMessage" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO message(<include refid="insertMessage"></include>)
+        VALUES(#{fromId},#{toId},#{conversationId},#{content},#{status},#{createTime})
+    </insert>
+    <update id="updateMessage">
+        UPDATE message SET `status` = #{status}
+        WHERE id IN
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </update>
+    <select id="getLastedMessage" resultType="com.newcoder.community.pojo.Message">
+        SELECT
+        <include refid="selectMessage"></include>
+        FROM message
+        WHERE id in
+        (SELECT MAX(id)
+        FROM message
+        WHERE (message.to_id = #{toId} OR from_id = #{toId}) AND message.from_id != 1 AND `status` != 2
+        GROUP BY conversation_id)
+        Order BY id DESC ,`status` ASC
+    </select>
+    <select id="getLetters" resultType="com.newcoder.community.pojo.Message">
+        SELECT
+        <include refid="selectMessage"></include>
+        FROM message
+        WHERE from_id != 1 AND `status` != 2 AND conversation_id = #{conversationId}
+        Order BY id DESC
+    </select>
+    <select id="getMessageCount" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM message
+        WHERE id in
+              (SELECT MAX(id)
+               FROM message
+               WHERE (message.to_id = #{toId} OR from_id = #{toId})
+                 AND message.from_id
+            != 1
+          AND `status` != 2
+        GROUP BY conversation_id)
+    </select>
+    <select id="getSingleLetterCount" resultType="java.lang.Integer">
+        SELECT COUNT(id)
+        FROM message
+        WHERE from_id != 1 AND `status` != 2 AND conversation_id = #{conversationId}
+    </select>
+    <select id="getUnreadMessageCount" resultType="java.lang.Integer">
+        SELECT COUNT(id)
+        FROM message
+        WHERE from_id != 1 AND `status` = 0 AND to_id = #{toId}
+        <if test="conversationId != null">
+            AND conversation_id = #{conversationId}
+        </if>
+    </select>
+    <select id="getLastedMsg" resultType="com.newcoder.community.pojo.Message">
+        SELECT
+        <include refid="selectMessage"></include>
+        FROM message
+        WHERE id in(
+        SELECT MAX(id)
+        FROM message
+        WHERE to_id = #{userId}
+          AND from_id=1
+        AND conversation_id=#{topic}
+        AND `status`!=2
+        )
+    </select>
+    <select id="getUnreadMsgCount" resultType="java.lang.Integer">
+        SELECT COUNT(id)
+        FROM message
+        WHERE to_id = #{userId}
+        AND `status`=0
+        AND from_id=1
+        <if test="topic != null">
+            AND conversation_id=#{topic}
+        </if>
+    </select>
+    <select id="getAllCount" resultType="java.lang.Integer">
+        SELECT COUNT(id)
+        FROM message
+        WHERE to_id = #{userId}
+          AND `status` = 0
+          AND from_id=1
+          AND conversation_id = #{topic}
+    </select>
+    <select id="getMessageDetail" resultType="com.newcoder.community.pojo.Message">
+        SELECT <include refid="selectMessage"></include>
+        FROM message
+        WHERE to_id=#{userId}
+        AND from_id=1
+        AND `status` != 2
+        AND conversation_id = #{topic}
+        ORDER BY create_time DESC
+    </select>
+</mapper>

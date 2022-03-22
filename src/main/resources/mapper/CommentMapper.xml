@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newcoder.community.dao.CommentMapper">
+    <sql id="selectComment">
+        id,user_id,entity_type,entity_id,target_id,content,`status`,create_time
+    </sql>
+    <sql id="insertComment">
+        user_id,entity_type,entity_id,target_id,content,`status`,create_time
+    </sql>
+    <insert id="addComment">
+        INSERT INTO comment(<include refid="insertComment"></include>)
+        VALUES(#{userId},#{entityType},#{entityId},#{targetId},#{content},#{status},#{createTime})
+    </insert>
+
+    <select id="getComment" resultType="com.newcoder.community.pojo.Comment">
+    SELECT <include refid="selectComment"></include>
+    FROM comment
+    WHERE entity_type = #{entityType} AND entity_id = #{entityId}
+    ORDER BY create_time DESC
+    </select>
+    <select id="getCommentCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM comment
+        WHERE entity_type = #{entityType} AND entity_id = #{entityId}
+    </select>
+    <select id="getCommentById" resultType="com.newcoder.community.pojo.Comment">
+        SELECT <include refid="selectComment"></include>
+        FROM  comment
+        WHERE id=#{id}
+    </select>
+    <select id="getMyComment" resultType="com.newcoder.community.pojo.Comment">
+        SELECT <include refid="selectComment"></include>
+        FROM comment
+        WHERE user_id=#{userId}
+    </select>
+    <select id="getMyCommentCount" resultType="java.lang.Integer">
+        SELECT COUNT(id)
+        FROM comment
+        WHERE user_id=#{userId}
+    </select>
+
+
+</mapper>
